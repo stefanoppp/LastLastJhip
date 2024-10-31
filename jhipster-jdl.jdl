@@ -1,0 +1,78 @@
+application {
+  config {
+    applicationType monolith
+    authenticationType jwt
+    baseName serverApi
+    buildTool maven
+    cacheProvider ehcache
+    clientFramework angular
+    clientTheme none
+    databaseType sql
+    devDatabaseType h2Disk
+    enableHibernateCache true
+    enableTranslation true
+    packageName um.prog2
+    prodDatabaseType mysql
+  }
+  entities *
+}
+entity Dispositivo {
+  id Long required,
+  idExterno Long required,
+  codigo String required,
+  nombre String required,
+  descripcion String required,
+  precioBase BigDecimal required min(0),
+  moneda Moneda required
+}
+entity Caracteristica {
+  id Long required,
+  idExterno Long required,
+  nombre String required,
+  descripcion String required
+}
+entity Personalizacion {
+  id Long required,
+  idExterno Long required,
+  nombre String required,
+  descripcion String required
+}
+entity Opcion {
+  id Long required,
+  idExterno Long required,
+  codigo String required,
+  nombre String required,
+  descripcion String required,
+  precioAdicional BigDecimal required min(0)
+}
+entity Adicional {
+  id Long required,
+  idExterno Long required,
+  nombre String required,
+  descripcion String required,
+  precio BigDecimal required min(0),
+  precioGratis BigDecimal required min(-1)
+}
+entity Venta {
+    fechaVenta ZonedDateTime required,
+    precioFinal Float required
+}
+enum Moneda{
+	ARS,
+  USD,
+  EUR
+}
+relationship ManyToOne {
+  Caracteristica{dispositivo required} to Dispositivo,
+  Opcion{personalizacion required} to Personalizacion,
+  Personalizacion{dispositivo required} to Dispositivo,
+  Adicional{dispositivo required} to Dispositivo,
+  Venta{dispositivo required} to Dispositivo
+}
+relationship ManyToMany {
+    Venta{personalizaciones} to Personalizacion,
+    Venta{adicionales} to Adicional
+} 
+paginate Dispositivo, Caracteristica, Personalizacion, Opcion,Adicional, Venta with infinite-scroll
+service Dispositivo, Caracteristica, Personalizacion, Opcion, Adicional, Venta with serviceClass
+dto Dispositivo, Caracteristica, Personalizacion, Opcion, Adicional, Venta with mapstruct

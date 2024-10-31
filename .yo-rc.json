@@ -1,0 +1,26 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "authenticationType": "jwt",
+    "baseName": "serverApi",
+    "buildTool": "maven",
+    "cacheProvider": "ehcache",
+    "clientFramework": "angular",
+    "clientTheme": "none",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "devServerPort": 4200,
+    "enableHibernateCache": true,
+    "enableTranslation": true,
+    "entities": ["Dispositivo", "Caracteristica", "Personalizacion", "Opcion", "Adicional", "Venta"],
+    "jhipsterVersion": "8.7.1",
+    "jwtSecretKey": "NDU2NmY5MDE0M2RlMDBmM2FkYjkyYjcxOGRiNjAzZjlhMGY5NDQzOWVlOTMwOTBkN2RmODUxMjY5YTcxNGQzZWU2NDI0YjVkZTJmNjc0NjhkN2ZiNGUxMTQ4N2Y2YjE2ZDFiNTlmMTgxY2VhMjc4OWQ4YzMxNTViOGNiOTQwNmQ=",
+    "languages": ["en"],
+    "lastLiquibaseTimestamp": 1730391449000,
+    "monorepository": true,
+    "nativeLanguage": "en",
+    "packageName": "um.prog2",
+    "prodDatabaseType": "mysql",
+    "skipCommitHook": true
+  }
+}

@@ -1,0 +1,129 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-caracteristica-heading"
+        data-cy="CaracteristicaCreateUpdateHeading"
+        jhiTranslate="serverApiApp.caracteristica.home.createOrEditLabel"
+      >
+        Create or edit a Caracteristica
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          @let idRef = editForm.get('id')!;
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="serverApiApp.caracteristica.id">Id</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+            @if (idRef.invalid && (idRef.dirty || idRef.touched)) {
+              <div>
+                @if (editForm.get('id')?.errors?.required) {
+                  <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+                }
+                <small class="form-text text-danger" [hidden]="!editForm.get('id')?.errors?.number" jhiTranslate="entity.validation.number"
+                  >This field should be a number.</small
+                >
+              </div>
+            }
+          </div>
+        }
+
+        @let idExternoRef = editForm.get('idExterno')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_idExterno" jhiTranslate="serverApiApp.caracteristica.idExterno">Id Externo</label>
+          <input type="number" class="form-control" name="idExterno" id="field_idExterno" data-cy="idExterno" formControlName="idExterno" />
+          @if (idExternoRef.invalid && (idExternoRef.dirty || idExternoRef.touched)) {
+            <div>
+              @if (editForm.get('idExterno')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('idExterno')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let nombreRef = editForm.get('nombre')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_nombre" jhiTranslate="serverApiApp.caracteristica.nombre">Nombre</label>
+          <input type="text" class="form-control" name="nombre" id="field_nombre" data-cy="nombre" formControlName="nombre" />
+          @if (nombreRef.invalid && (nombreRef.dirty || nombreRef.touched)) {
+            <div>
+              @if (editForm.get('nombre')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let descripcionRef = editForm.get('descripcion')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_descripcion" jhiTranslate="serverApiApp.caracteristica.descripcion">Descripcion</label>
+          <input
+            type="text"
+            class="form-control"
+            name="descripcion"
+            id="field_descripcion"
+            data-cy="descripcion"
+            formControlName="descripcion"
+          />
+          @if (descripcionRef.invalid && (descripcionRef.dirty || descripcionRef.touched)) {
+            <div>
+              @if (editForm.get('descripcion')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_dispositivo" jhiTranslate="serverApiApp.caracteristica.dispositivo">Dispositivo</label>
+          <select
+            class="form-control"
+            id="field_dispositivo"
+            data-cy="dispositivo"
+            name="dispositivo"
+            formControlName="dispositivo"
+            [compareWith]="compareDispositivo"
+          >
+            @if (!editForm.get('dispositivo')!.value) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (dispositivoOption of dispositivosSharedCollection; track $index) {
+              <option [ngValue]="dispositivoOption">{{ dispositivoOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['dispositivo'])!.invalid && (editForm.get(['dispositivo'])!.dirty || editForm.get(['dispositivo'])!.touched)) {
+          <div>
+            @if (editForm.get(['dispositivo'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

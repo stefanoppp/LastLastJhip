@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity Venta.
+    -->
+    <changeSet id="20241031161729-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="dispositivo_id"
+                                 baseTableName="venta"
+                                 constraintName="fk_venta__dispositivo_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="dispositivo"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="venta_id"
+                                 baseTableName="rel_venta__personalizaciones"
+                                 constraintName="fk_rel_venta__personalizaciones__venta_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="venta"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="personalizaciones_id"
+                                 baseTableName="rel_venta__personalizaciones"
+                                 constraintName="fk_rel_venta__personalizaciones__personalizaciones_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="personalizacion"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="venta_id"
+                                 baseTableName="rel_venta__adicionales"
+                                 constraintName="fk_rel_venta__adicionales__venta_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="venta"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="adicionales_id"
+                                 baseTableName="rel_venta__adicionales"
+                                 constraintName="fk_rel_venta__adicionales__adicionales_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="adicional"
+                                 />
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,67 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (adicional(); as adicionalRef) {
+      <div>
+        <h2 data-cy="adicionalDetailsHeading"><span jhiTranslate="serverApiApp.adicional.detail.title">Adicional</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="serverApiApp.adicional.id">Id</span></dt>
+          <dd>
+            <span>{{ adicionalRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.idExterno">Id Externo</span></dt>
+          <dd>
+            <span>{{ adicionalRef.idExterno }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.nombre">Nombre</span></dt>
+          <dd>
+            <span>{{ adicionalRef.nombre }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.descripcion">Descripcion</span></dt>
+          <dd>
+            <span>{{ adicionalRef.descripcion }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.precio">Precio</span></dt>
+          <dd>
+            <span>{{ adicionalRef.precio }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.precioGratis">Precio Gratis</span></dt>
+          <dd>
+            <span>{{ adicionalRef.precioGratis }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.dispositivo">Dispositivo</span></dt>
+          <dd>
+            @if (adicional()!.dispositivo) {
+              <div>
+                <a [routerLink]="['/dispositivo', adicional()!.dispositivo?.id, 'view']">{{ adicionalRef.dispositivo?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.adicional.venta">Venta</span></dt>
+          <dd>
+            @for (venta of adicionalRef.ventas; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/venta', venta.id, 'view']">{{ venta?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/adicional', adicionalRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

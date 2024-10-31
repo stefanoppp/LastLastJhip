@@ -1,0 +1,151 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-venta-heading" data-cy="VentaCreateUpdateHeading" jhiTranslate="serverApiApp.venta.home.createOrEditLabel">
+        Create or edit a Venta
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="serverApiApp.venta.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let fechaVentaRef = editForm.get('fechaVenta')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_fechaVenta" jhiTranslate="serverApiApp.venta.fechaVenta">Fecha Venta</label>
+          <div class="d-flex">
+            <input
+              id="field_fechaVenta"
+              data-cy="fechaVenta"
+              type="datetime-local"
+              class="form-control"
+              name="fechaVenta"
+              formControlName="fechaVenta"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (fechaVentaRef.invalid && (fechaVentaRef.dirty || fechaVentaRef.touched)) {
+            <div>
+              @if (editForm.get('fechaVenta')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('fechaVenta')?.errors?.datetimelocal"
+                jhiTranslate="entity.validation.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let precioFinalRef = editForm.get('precioFinal')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_precioFinal" jhiTranslate="serverApiApp.venta.precioFinal">Precio Final</label>
+          <input
+            type="number"
+            class="form-control"
+            name="precioFinal"
+            id="field_precioFinal"
+            data-cy="precioFinal"
+            formControlName="precioFinal"
+          />
+          @if (precioFinalRef.invalid && (precioFinalRef.dirty || precioFinalRef.touched)) {
+            <div>
+              @if (editForm.get('precioFinal')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('precioFinal')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_dispositivo" jhiTranslate="serverApiApp.venta.dispositivo">Dispositivo</label>
+          <select
+            class="form-control"
+            id="field_dispositivo"
+            data-cy="dispositivo"
+            name="dispositivo"
+            formControlName="dispositivo"
+            [compareWith]="compareDispositivo"
+          >
+            @if (!editForm.get('dispositivo')!.value) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (dispositivoOption of dispositivosSharedCollection; track $index) {
+              <option [ngValue]="dispositivoOption">{{ dispositivoOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['dispositivo'])!.invalid && (editForm.get(['dispositivo'])!.dirty || editForm.get(['dispositivo'])!.touched)) {
+          <div>
+            @if (editForm.get(['dispositivo'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        }
+
+        <div class="mb-3">
+          <label for="field_personalizaciones" jhiTranslate="serverApiApp.venta.personalizaciones">Personalizaciones</label>
+          <select
+            class="form-control"
+            id="field_personalizaciones"
+            data-cy="personalizaciones"
+            multiple
+            name="personalizaciones"
+            formControlName="personalizaciones"
+            [compareWith]="comparePersonalizacion"
+          >
+            @for (personalizacionOption of personalizacionsSharedCollection; track $index) {
+              <option [ngValue]="personalizacionOption">{{ personalizacionOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_adicionales" jhiTranslate="serverApiApp.venta.adicionales">Adicionales</label>
+          <select
+            class="form-control"
+            id="field_adicionales"
+            data-cy="adicionales"
+            multiple
+            name="adicionales"
+            formControlName="adicionales"
+            [compareWith]="compareAdicional"
+          >
+            @for (adicionalOption of adicionalsSharedCollection; track $index) {
+              <option [ngValue]="adicionalOption">{{ adicionalOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

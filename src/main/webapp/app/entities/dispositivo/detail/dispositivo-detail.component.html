@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (dispositivo(); as dispositivoRef) {
+      <div>
+        <h2 data-cy="dispositivoDetailsHeading"><span jhiTranslate="serverApiApp.dispositivo.detail.title">Dispositivo</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="serverApiApp.dispositivo.id">Id</span></dt>
+          <dd>
+            <span>{{ dispositivoRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.dispositivo.idExterno">Id Externo</span></dt>
+          <dd>
+            <span>{{ dispositivoRef.idExterno }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.dispositivo.codigo">Codigo</span></dt>
+          <dd>
+            <span>{{ dispositivoRef.codigo }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.dispositivo.nombre">Nombre</span></dt>
+          <dd>
+            <span>{{ dispositivoRef.nombre }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.dispositivo.descripcion">Descripcion</span></dt>
+          <dd>
+            <span>{{ dispositivoRef.descripcion }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.dispositivo.precioBase">Precio Base</span></dt>
+          <dd>
+            <span>{{ dispositivoRef.precioBase }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.dispositivo.moneda">Moneda</span></dt>
+          <dd>
+            <span [jhiTranslate]="'serverApiApp.Moneda.' + (dispositivoRef.moneda ?? 'null')">{{
+              { null: '', ARS: 'ARS', USD: 'USD', EUR: 'EUR' }[dispositivoRef.moneda ?? 'null']
+            }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/dispositivo', dispositivoRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

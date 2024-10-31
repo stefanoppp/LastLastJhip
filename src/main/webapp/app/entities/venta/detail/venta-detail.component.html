@@ -1,0 +1,64 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (venta(); as ventaRef) {
+      <div>
+        <h2 data-cy="ventaDetailsHeading"><span jhiTranslate="serverApiApp.venta.detail.title">Venta</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ ventaRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.venta.fechaVenta">Fecha Venta</span></dt>
+          <dd>
+            <span>{{ ventaRef.fechaVenta | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.venta.precioFinal">Precio Final</span></dt>
+          <dd>
+            <span>{{ ventaRef.precioFinal }}</span>
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.venta.dispositivo">Dispositivo</span></dt>
+          <dd>
+            @if (venta()!.dispositivo) {
+              <div>
+                <a [routerLink]="['/dispositivo', venta()!.dispositivo?.id, 'view']">{{ ventaRef.dispositivo?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.venta.personalizaciones">Personalizaciones</span></dt>
+          <dd>
+            @for (personalizaciones of ventaRef.personalizaciones; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/personalizacion', personalizaciones.id, 'view']">{{ personalizaciones?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+          <dt><span jhiTranslate="serverApiApp.venta.adicionales">Adicionales</span></dt>
+          <dd>
+            @for (adicionales of ventaRef.adicionales; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/adicional', adicionales.id, 'view']">{{ adicionales?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/venta', ventaRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

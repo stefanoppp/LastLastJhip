@@ -1,0 +1,28 @@
+{
+  "serverApiApp": {
+    "personalizacion": {
+      "home": {
+        "title": "Personalizacions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Personalizacion",
+        "createOrEditLabel": "Create or edit a Personalizacion",
+        "notFound": "No Personalizacions found"
+      },
+      "created": "A new Personalizacion is created with identifier {{ param }}",
+      "updated": "A Personalizacion is updated with identifier {{ param }}",
+      "deleted": "A Personalizacion is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Personalizacion {{ id }}?"
+      },
+      "detail": {
+        "title": "Personalizacion"
+      },
+      "id": "Id",
+      "idExterno": "Id Externo",
+      "nombre": "Nombre",
+      "descripcion": "Descripcion",
+      "dispositivo": "Dispositivo",
+      "venta": "Venta"
+    }
+  }
+}
