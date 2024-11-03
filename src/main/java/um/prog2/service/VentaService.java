@@ -9,6 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import um.prog2.domain.Adicional;
 import um.prog2.domain.Dispositivo;
 import um.prog2.domain.Personalizacion;
@@ -24,6 +33,7 @@ import um.prog2.service.mapper.AdicionalMapper;
 import um.prog2.service.mapper.DispositivoMapper;
 import um.prog2.service.mapper.PersonalizacionMapper;
 import um.prog2.service.mapper.VentaMapper;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Service Implementation for managing {@link um.prog2.domain.Venta}.
@@ -123,6 +133,10 @@ public class VentaService {
         // Convertir VentaDTO a Venta y guardar
         Venta venta = ventaMapper.toEntity(ventaDTO);
         venta = ventaRepository.save(venta);
+
+        // Modificar y enviar el JSON a otra URL
+        modifyAndSendVenta(ventaDTO);
+
         return ventaMapper.toDto(venta);
     }
 
@@ -199,5 +213,87 @@ public class VentaService {
     public void delete(Long id) {
         LOG.debug("Request to delete Venta : {}", id);
         ventaRepository.deleteById(id);
+    }
+
+    /**
+     * Modifica el JSON recibido para cumplir con el formato requerido y envía la venta a otra URL usando un token de autenticación.
+     *
+     * @param ventaDTO la entidad que se debe modificar y enviar.
+     */
+    public void modifyAndSendVenta(VentaDTO ventaDTO) {
+        LOG.debug("Request to modify and send Venta : {}", ventaDTO);
+
+        try {
+            String formattedJson = formatVentaToJson(ventaDTO);
+            LOG.debug("Formatted JSON to send: {}", formattedJson);
+
+            // Enviar la venta formateada a la URL destino
+            sendVentaToTargetUrl(formattedJson);
+        } catch (IOException e) {
+            LOG.error("Error al formatear y enviar la venta: ", e);
+        }
+    }
+
+    /**
+     * Formatea la venta recibida a un JSON con el formato específico requerido, incluyendo los ids externos.
+     */
+    private String formatVentaToJson(VentaDTO ventaDTO) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Creando un nuevo objeto que representará la estructura deseada con ids externos
+        var formattedVenta = new Object() {
+            public Long idDispositivo = ventaDTO.getDispositivo().getIdExterno();
+            public Set<Object> personalizaciones = new HashSet<>();
+            public Set<Object> adicionales = new HashSet<>();
+            public Float precioFinal = ventaDTO.getPrecioFinal() != null ? ventaDTO.getPrecioFinal().floatValue() : 0.0f;
+            public String fechaVenta = ventaDTO.getFechaVenta().format(DateTimeFormatter.ISO_INSTANT);
+        };
+
+        // Añadiendo personalizaciones con id externo al formato deseado
+        for (PersonalizacionDTO personalizacionDTO : ventaDTO.getPersonalizaciones()) {
+            var formattedPersonalizacion = new Object() {
+                public Long id = personalizacionDTO.getIdExterno();
+            };
+            formattedVenta.personalizaciones.add(formattedPersonalizacion);
+        }
+
+        // Añadiendo adicionales con id externo al formato deseado
+        for (AdicionalDTO adicionalDTO : ventaDTO.getAdicionales()) {
+            var formattedAdicional = new Object() {
+                public Long id = adicionalDTO.getIdExterno();
+                public Float precio = adicionalDTO.getPrecio() != null ? adicionalDTO.getPrecio().floatValue() : 0.0f;
+            };
+            formattedVenta.adicionales.add(formattedAdicional);
+        }
+
+        // Convertir a JSON String
+        return mapper.writeValueAsString(formattedVenta);
+    }
+
+    /**
+     * Envía la venta formateada a la URL objetivo usando un token de autenticación.
+     */
+    private void sendVentaToTargetUrl(String formattedJson) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzM5MDM5OTEyLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMwMzk5OTEyfQ.A-qDTNR24N8xBIhezYtrahctbl4JaX5W4OiNndh9bftpR0P-HjQZVviG6THDUggcCw7OEWBY-zWk3P51anAZmg");
+        headers.add("Content-Type", "application/json");
+        headers.add("Accept", "application/json");
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(formattedJson, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                "http://192.168.194.254:8080/api/catedra/vender",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+            );
+            LOG.info("Venta enviada exitosamente, respuesta: {}", response.getBody());
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOG.error("Error al enviar la venta al target URL. Código de estado: {}, Cuerpo de la respuesta: {}", e.getStatusCode(), e.getResponseBodyAsString());
+        } catch (Exception e) {
+            LOG.error("Error al enviar la venta al target URL: ", e);
+        }
     }
 }
