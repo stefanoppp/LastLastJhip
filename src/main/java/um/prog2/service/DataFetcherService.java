@@ -22,7 +22,7 @@ public class DataFetcherService {
         "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzM3NzUxMjYzLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzI5MTExMjYzfQ.MN7mDl7nswUM30IHJlvkfSjjqe_5NAEC6CGIF07SHCu-1R2fr1cETw0MtX7G6Aa47WqiPsoY5qPTgR2REs_jFA";
     public static ObjectMapper mapper = new ObjectMapper();
 
-    private static String getDataFromApi() throws IOException {
+    static String getDataFromApi() throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(URL);
             request.addHeader("Authorization", "Bearer " + JWT_TOKEN);
