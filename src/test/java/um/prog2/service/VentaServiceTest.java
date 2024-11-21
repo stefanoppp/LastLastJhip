@@ -34,7 +34,7 @@ public class VentaServiceTest {
 
     @Test
     public void testGetVentaById_Success() {
-        // Mockear una venta con un ID específico
+        // Crea la venta y luego la mockea
         Long ventaId = 1L;
         Venta mockVenta = new Venta();
         mockVenta.setId(ventaId);

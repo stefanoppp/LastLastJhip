@@ -276,7 +276,7 @@ public class VentaService {
     private void sendVentaToTargetUrl(String formattedJson) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzM5MDM5OTEyLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMwMzk5OTEyfQ.A-qDTNR24N8xBIhezYtrahctbl4JaX5W4OiNndh9bftpR0P-HjQZVviG6THDUggcCw7OEWBY-zWk3P51anAZmg");
+        headers.add("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzQwODM4OTYwLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMyMTk4OTYwfQ.IcEHxd6XA2Ejcx9O2-7IujY7Cp-5HQyTLeqjj5mAhKGoWYUhWDaRimh6vbSbjLXmx1-2crnUWxI7gMPGG2hpvw");
         headers.add("Content-Type", "application/json");
         headers.add("Accept", "application/json");
 

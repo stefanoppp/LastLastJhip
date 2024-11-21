@@ -19,7 +19,7 @@ public class DataFetcherService {
 
     private static final String URL = "http://192.168.194.254:8080/api/catedra/dispositivos";
     private static final String JWT_TOKEN =
-        "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzM3NzUxMjYzLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzI5MTExMjYzfQ.MN7mDl7nswUM30IHJlvkfSjjqe_5NAEC6CGIF07SHCu-1R2fr1cETw0MtX7G6Aa47WqiPsoY5qPTgR2REs_jFA";
+        "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzQwODM4OTYwLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMyMTk4OTYwfQ.IcEHxd6XA2Ejcx9O2-7IujY7Cp-5HQyTLeqjj5mAhKGoWYUhWDaRimh6vbSbjLXmx1-2crnUWxI7gMPGG2hpvw";
     public static ObjectMapper mapper = new ObjectMapper();
 
     static String getDataFromApi() throws IOException {
