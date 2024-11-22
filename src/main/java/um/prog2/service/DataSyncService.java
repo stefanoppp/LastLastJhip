@@ -1,7 +1,5 @@
 package um.prog2.service;
 
-import static um.prog2.service.DataFetcherService.mapper;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -36,8 +34,7 @@ public class DataSyncService {
     private final AdicionalRepository adicionalRepository;
 
     private final DataFetcherService dataFetcherService;
-
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
     public DataSyncService(
         DispositivoRepository dispositivoRepository,
@@ -53,6 +50,7 @@ public class DataSyncService {
         this.opcionRepository = opcionRepository;
         this.adicionalRepository = adicionalRepository;
         this.dataFetcherService = dataFetcherService;
+        this.mapper = new ObjectMapper();
     }
 
     @PostConstruct
@@ -77,7 +75,7 @@ public class DataSyncService {
     }
 
     private void syncDispositivos() throws IOException {
-        List<Dispositivo> dispositivos = parseDispositivos();
+        List<Dispositivo> dispositivos = mapper.readValue(dataFetcherService.getDispositivos(), new TypeReference<List<Dispositivo>>() {});
         for (Dispositivo dispositivo : dispositivos) {
             log.info("Procesando dispositivo con idExterno: {}", dispositivo.getIdExterno());
             Dispositivo dispositivoExistente = dispositivoRepository.findByIdExterno(dispositivo.getIdExterno());
@@ -91,33 +89,9 @@ public class DataSyncService {
     }
 
     private void syncCaracteristicas() throws IOException {
-        List<Caracteristica> caracteristicas = parseCaracteristicas();
+        List<Caracteristica> caracteristicas = mapper.readValue(dataFetcherService.getCaracteristicas(), new TypeReference<List<Caracteristica>>() {});
         for (Caracteristica caracteristica : caracteristicas) {
             log.info("Procesando característica con idExterno: {}", caracteristica.getIdExterno());
-
-            Dispositivo dispositivo = caracteristica.getDispositivo();
-
-            // Verificar si dispositivo es nulo o no tiene idExterno
-            if (dispositivo == null || dispositivo.getIdExterno() == null) {
-                log.error("Dispositivo es nulo o no tiene idExterno para la característica con idExterno: {}", caracteristica.getIdExterno());
-                continue;
-            }
-
-            Dispositivo dbDispositivo = dispositivoRepository.findByIdExterno(dispositivo.getIdExterno());
-
-            if (dbDispositivo != null) {
-                log.info("Dispositivo encontrado para la característica, id: {}", dbDispositivo.getId());
-                caracteristica.setDispositivo(dbDispositivo);
-            } else {
-                log.error("No se encontró dispositivo con idExterno: {}", dispositivo.getIdExterno());
-                continue; // No se puede proceder sin el dispositivo relacionado
-            }
-
-            if (caracteristica.getIdExterno() == null) {
-                log.error("El campo idExterno no puede ser nulo para la característica.");
-                continue; // Evitar persistencia con idExterno nulo
-            }
-
             Caracteristica existingCaracteristica = caracteristicaRepository.findByIdExterno(caracteristica.getIdExterno());
             if (existingCaracteristica == null) {
                 caracteristicaRepository.save(caracteristica);
@@ -129,143 +103,14 @@ public class DataSyncService {
     }
 
     private void syncPersonalizaciones() throws IOException {
-        List<Personalizacion> personalizaciones = parsePersonalizaciones();
-        for (Personalizacion personalizacion : personalizaciones) {
-            log.info("Procesando personalización con idExterno: {}", personalizacion.getIdExterno());
-
-            Dispositivo dispositivo = personalizacion.getDispositivo();
-
-            // Verificar si dispositivo es nulo o no tiene idExterno
-            if (dispositivo == null || dispositivo.getIdExterno() == null) {
-                log.error("Dispositivo es nulo o no tiene idExterno para la personalización con idExterno: {}", personalizacion.getIdExterno());
-                continue;
-            }
-
-            Dispositivo dbDispositivo = dispositivoRepository.findByIdExterno(dispositivo.getIdExterno());
-
-            if (dbDispositivo != null) {
-                log.info("Dispositivo encontrado para la personalización, id: {}", dbDispositivo.getId());
-                personalizacion.setDispositivo(dbDispositivo);
-            } else {
-                log.error("No se encontró dispositivo con idExterno: {}", dispositivo.getIdExterno());
-                continue; // No se puede proceder sin el dispositivo relacionado
-            }
-
-            if (personalizacion.getIdExterno() == null) {
-                log.error("El campo idExterno no puede ser nulo para la personalización.");
-                continue; // Evitar persistencia con idExterno nulo
-            }
-
-            Personalizacion existingPersonalizacion = personalizacionRepository.findByIdExterno(personalizacion.getIdExterno());
-            if (existingPersonalizacion == null) {
-                personalizacionRepository.save(personalizacion);
-                log.info("Personalización guardada con idExterno: {}", personalizacion.getIdExterno());
-            } else {
-                log.info("Personalización ya existe, idExterno: {}", personalizacion.getIdExterno());
-            }
-        }
+        List<Personalizacion> personalizaciones = mapper.readValue(dataFetcherService.getPersonalizaciones(), new TypeReference<List<Personalizacion>>() {});
     }
 
     private void syncOpciones() throws IOException {
-        List<Opcion> opciones = parseOpciones();
-        for (Opcion opcion : opciones) {
-            log.info("Procesando opción con idExterno: {}", opcion.getIdExterno());
-
-            Personalizacion personalizacion = opcion.getPersonalizacion();
-
-            // Verificar si la personalización es nula o no tiene idExterno
-            if (personalizacion == null || personalizacion.getIdExterno() == null) {
-                log.error("Personalización es nula o no tiene idExterno para la opción con idExterno: {}", opcion.getIdExterno());
-                continue;
-            }
-
-            Personalizacion dbPersonalizacion = personalizacionRepository.findByIdExterno(personalizacion.getIdExterno());
-
-            if (dbPersonalizacion != null) {
-                log.info("Personalización encontrada para la opción, id: {}", dbPersonalizacion.getId());
-                opcion.setPersonalizacion(dbPersonalizacion);
-            } else {
-                log.error("No se encontró personalización con idExterno: {}", personalizacion.getIdExterno());
-                continue; // No se puede proceder sin la personalización relacionada
-            }
-
-            if (opcion.getIdExterno() == null) {
-                log.error("El campo idExterno no puede ser nulo para la opción.");
-                continue; // Evitar persistencia con idExterno nulo
-            }
-
-            Opcion existingOpcion = opcionRepository.findByIdExterno(opcion.getIdExterno());
-            if (existingOpcion == null) {
-                opcionRepository.save(opcion);
-                log.info("Opción guardada con idExterno: {}", opcion.getIdExterno());
-            } else {
-                log.info("Opción ya existe, idExterno: {}", opcion.getIdExterno());
-            }
-        }
+        List<Opcion> opciones = mapper.readValue(dataFetcherService.getOpciones(), new TypeReference<List<Opcion>>() {});
     }
 
     private void syncAdicionales() throws IOException {
-        List<Adicional> adicionales = parseAdicionales();
-        for (Adicional adicional : adicionales) {
-            log.info("Procesando adicional con idExterno: {}", adicional.getIdExterno());
-
-            Dispositivo dispositivo = adicional.getDispositivo();
-
-            // Verificar si dispositivo es nulo o no tiene idExterno
-            if (dispositivo == null || dispositivo.getIdExterno() == null) {
-                log.error("Dispositivo es nulo o no tiene idExterno para el adicional con idExterno: {}", adicional.getIdExterno());
-                continue;
-            }
-
-            Dispositivo dbDispositivo = dispositivoRepository.findByIdExterno(dispositivo.getIdExterno());
-
-            if (dbDispositivo != null) {
-                log.info("Dispositivo encontrado para el adicional, id: {}", dbDispositivo.getId());
-                adicional.setDispositivo(dbDispositivo);
-            } else {
-                log.error("No se encontró dispositivo con idExterno: {}", dispositivo.getIdExterno());
-                continue; // No se puede proceder sin el dispositivo relacionado
-            }
-
-            if (adicional.getIdExterno() == null) {
-                log.error("El campo idExterno no puede ser nulo para el adicional.");
-                continue; // Evitar persistencia con idExterno nulo
-            }
-
-            Adicional existingAdicional = adicionalRepository.findByIdExterno(adicional.getIdExterno());
-            if (existingAdicional == null) {
-                adicionalRepository.save(adicional);
-                log.info("Adicional guardado con idExterno: {}", adicional.getIdExterno());
-            } else {
-                log.info("Adicional ya existe, idExterno: {}", adicional.getIdExterno());
-            }
-        }
-    }
-
-    // Métodos de parseo
-
-    private List<Dispositivo> parseDispositivos() throws IOException {
-        String jsonData = DataFetcherService.getDispositivos();
-        return mapper.readValue(jsonData, new TypeReference<List<Dispositivo>>() {});
-    }
-
-    private List<Caracteristica> parseCaracteristicas() throws IOException {
-        String jsonData = dataFetcherService.getCaracteristicas();
-        return mapper.readValue(jsonData, new TypeReference<List<Caracteristica>>() {});
-    }
-
-    private List<Personalizacion> parsePersonalizaciones() throws IOException {
-        String jsonData = dataFetcherService.getPersonalizaciones();
-        return mapper.readValue(jsonData, new TypeReference<List<Personalizacion>>() {});
-    }
-
-    private List<Opcion> parseOpciones() throws IOException {
-        String jsonData = dataFetcherService.getOpciones();
-        return mapper.readValue(jsonData, new TypeReference<List<Opcion>>() {});
-    }
-
-    private List<Adicional> parseAdicionales() throws IOException {
-        String jsonData = dataFetcherService.getAdicionales();
-        return mapper.readValue(jsonData, new TypeReference<List<Adicional>>() {});
+        List<Adicional> adicionales = mapper.readValue(dataFetcherService.getAdicionales(), new TypeReference<List<Adicional>>() {});
     }
 }

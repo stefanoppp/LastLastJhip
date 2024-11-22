@@ -113,3 +113,7 @@ jhipster:
 # ===================================================================
 
 # application:
+apiconfig:
+  url: "http://192.168.194.254:8080/api/catedra/dispositivos"
+  url-venta: "http://192.168.194.254:8080/api/catedra/vender"
+  token: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzQwODM4OTYwLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMyMTk4OTYwfQ.IcEHxd6XA2Ejcx9O2-7IujY7Cp-5HQyTLeqjj5mAhKGoWYUhWDaRimh6vbSbjLXmx1-2crnUWxI7gMPGG2hpvw"

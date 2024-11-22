@@ -5,17 +5,15 @@ import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import um.prog2.domain.Adicional;
@@ -52,6 +50,12 @@ public class VentaService {
     private final DispositivoMapper dispositivoMapper;
     private final PersonalizacionMapper personalizacionMapper;
     private final AdicionalMapper adicionalMapper;
+
+    @Value("${apiconfig.url-venta}")
+    private String ventaUrl;
+
+    @Value("${apiconfig.token}")
+    private String apiToken;
 
     public VentaService(
         VentaRepository ventaRepository,
@@ -276,7 +280,7 @@ public class VentaService {
     private void sendVentaToTargetUrl(String formattedJson) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdGVmYW5vMTIzIiwiZXhwIjoxNzQwODM4OTYwLCJhdXRoIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzMyMTk4OTYwfQ.IcEHxd6XA2Ejcx9O2-7IujY7Cp-5HQyTLeqjj5mAhKGoWYUhWDaRimh6vbSbjLXmx1-2crnUWxI7gMPGG2hpvw");
+        headers.add("Authorization", "Bearer " + apiToken);
         headers.add("Content-Type", "application/json");
         headers.add("Accept", "application/json");
 
@@ -284,7 +288,7 @@ public class VentaService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                "http://192.168.194.254:8080/api/catedra/vender",
+                ventaUrl, // Utilizando la URL de venta desde las variables de entorno
                 HttpMethod.POST,
                 requestEntity,
                 String.class
